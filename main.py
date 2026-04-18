@@ -13,7 +13,7 @@
 """
 
 # Importing libraries
-import pygame, sys, math, random
+import pygame, sys, math, random, time
 
 # Single Lined Comments:
 
@@ -74,6 +74,10 @@ DURATION = 6 # seconds
 # Flags whether the results screen is active; Toggled to True when the
 # timer expires
 show_results = False
+
+# Flags whether it is the first loop of show_results being set to True;
+# Toggled to False after first visit
+first_loop_of_show_results = True
 
 # Records the time the game started in milliseconds; Used to calculate
 # elapsed time each frame
@@ -193,7 +197,7 @@ def check_for_clicks(event) -> bool:
     None: Runs indefinitely until the application is quit.
 """
 def run_game_loop() -> None:
-    global show_results
+    global show_results, first_loop_of_show_results
     # Game loop
     while True:
         timer_remaining = DURATION - (pygame.time.get_ticks() - \
@@ -208,7 +212,8 @@ def run_game_loop() -> None:
             check_for_clicks(event)
 
 
-        if timer_remaining < 0:
+        if timer_remaining <= 0:
+            timer_remaining = 0
             show_results = True
 
         # Renders current user's score
@@ -216,8 +221,31 @@ def run_game_loop() -> None:
         timer_label = font.render(f"Time: {timer_remaining} s", True, "black")
         click_counter_label = font.render(f"Clicks: {click_ctr}", True, "black")
 
+        # Items drawn bottom -> on top -> on top
+        screen.fill('purple')
+        
+        pygame.draw.rect(screen, "aqua", (100, 150, \
+            screen.get_size()[0] - 200, screen.get_size()[1] - 350))
+        
+        print(f"show_results={show_results}, drawing frame...")
+        if not show_results:
+            pygame.draw.circle(screen, "orange", circle_pos, \
+                circle_width)
+        
+        screen.blit(user_score_label, (5, 5))
+        screen.blit(click_counter_label, (5, 45))
+        screen.blit(timer_label, (5, 85))
+
+
         if show_results:
             # Items drawn bottom -> on top -> on top
+            if first_loop_of_show_results:
+                pygame.draw.rect(screen, "aqua", (100, 150, \
+                    screen.get_size()[0] - 200, screen.get_size()[1] - 350))
+                # Updates pygame display
+                pygame.display.update()
+                time.sleep(1)
+                first_loop_of_show_results = False
             screen.fill('orange')
             
             screen.blit(user_score_label, (screen.get_size()[0]/3, \
@@ -232,19 +260,6 @@ def run_game_loop() -> None:
                     / click_ctr) * 100:.2f}%", True, "black")
                 screen.blit(accuracy_label, (screen.get_size()[0]/3, \
                     screen.get_size()[1]/2 + 80))
-        else:
-            # Items drawn bottom -> on top -> on top
-            screen.fill('purple')
-            
-            pygame.draw.rect(screen, "aqua", (100, 150, \
-                screen.get_size()[0] - 200, screen.get_size()[1] - 350))
-            
-            pygame.draw.circle(screen, "orange", circle_pos, \
-                circle_width)
-            
-            screen.blit(user_score_label, (5, 5))
-            screen.blit(click_counter_label, (5, 45))
-            screen.blit(timer_label, (5, 85))
 
         # Updates pygame display
         pygame.display.update()
