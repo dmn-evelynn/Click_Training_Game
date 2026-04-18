@@ -13,9 +13,10 @@
 """
 
 # Importing libraries & classes
-import pygame, sys, math, random, time
+import sys, math, random, time
 from circle import circle
 from rectangle import rectangle
+from runGL import run_game_loop
 
 # --- Pygame Initialization ---
 
@@ -72,11 +73,7 @@ score_ctr = 0
 # results screen
 click_ctr = 0
 
-# --- Timer & Game State ---
-
-# Sets the game round length in seconds; Controls how long the player 
-# has to click targets
-DURATION = 6 # seconds
+# --- Game State ---
 
 # Flags whether the results screen is active; Toggled to True when the
 # timer expires
@@ -91,191 +88,10 @@ first_loop_of_show_results = True
 start_time = pygame.time.get_ticks()
 
 
-"""
-    check_circle_collision
-
-    Checks whether the mouse cursor is currently within the bounds of a circle
-    by calculating the Euclidean distance between the mouse position and the
-    circle's center, and comparing it against the circle's radius.
-
-    Parameters:
-    None
-
-    Returns:
-    bool: True if the mouse cursor is within or on the circle's boundary,
-          False otherwise.
-"""
-def check_circle_collision() -> bool:
-    mouse_pos = pygame.mouse.get_pos()
-    
-    if math.sqrt((mouse_pos[0] - target_entity.getPosition()[0])**2 + (mouse_pos[1] - \
-        target_entity.getPosition()[1])**2) <= target_entity.radius:
-        return True
-    return False
 
 
-"""
-    check_for_quit
-
-    Checks if the given event is a quit or escape key event, and if so,
-    shuts down pygame and exits the program.
-
-    Parameters:
-    event (pygame.event.Event): The pygame event to evaluate.
-
-    Returns:
-    bool: Does not return a value under normal execution; exits the program if a quit event is detected.
-"""
-def check_for_quit(event) -> bool:
-    if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and \
-        event.key == pygame.K_ESCAPE):
-        pygame.quit()
-        sys.exit()
 
 
-"""
-    generate_circle_pos
-
-    Randomly generates a valid (x, y) position on the screen where the pixel
-    color is cyan (R=0, G=255, B=255). Continues generating random positions
-    until a matching pixel is found.
-
-    Parameters:
-    None
-
-    Returns:
-    tuple (int, int): A tuple containing the x and y coordinates of a cyan pixel.
-"""
-def generate_circle_pos() -> (int, int):
-    while True:
-        circle_x = random.randint(0, int(screen.get_size()[0]) - 1)
-        circle_y = random.randint(0, int(screen.get_size()[1]) - 1)
-        
-        color = screen.get_at((circle_x, circle_y))
-        RED, GREEN, BLUE = color.r, color.g, color.b
-
-        if RED == 0 and GREEN == 255 and BLUE == 255:
-            return (circle_x, circle_y)
-        
-
-"""
-    check_for_clicks
-
-    Handles mouse click events during gameplay, checking whether the user clicked
-    on the circle and updating the score and circle position accordingly.
-
-    Parameters:
-    event (pygame.event.Event): The Pygame event object captured from the event loop.
-
-    Returns:
-    bool: Returns None implicitly if show_results is True (interaction blocked),
-        otherwise processes the click event and updates game state.
-"""
-def check_for_clicks(event) -> bool:
-    global score_ctr, circle_pos, click_ctr
-
-    # If show_results is True then prevent user from being able to interact with game components.
-    if show_results:
-        return
-
-    # If event mouse button down is found (clicking) then checks if circle was clicked/collided with
-    if event.type == pygame.MOUSEBUTTONDOWN:
-        # 1 = left click; 3 = right click
-        if event.button == 1 or event.button == 3:
-            click_ctr += 1
-            # Changes circle position & adds points to score counter
-            if check_circle_collision():
-                target_entity.updatePosition(generate_circle_pos())
-                # print(circle_pos)
-                score_ctr += 1
-
-
-"""
-    run_game_loop
-
-    Runs the main game loop, handling events, updating the display, and
-    switching between the active game view and the results screen when
-    the timer expires.
-
-    Parameters:
-    None
-
-    Returns:
-    None: Runs indefinitely until the application is quit.
-"""
-def run_game_loop() -> None:
-    global show_results, first_loop_of_show_results
-    # Game loop
-    while True:
-        timer_remaining = DURATION - (pygame.time.get_ticks() - \
-            start_time) // 1000
-        
-        events = pygame.event.get()
-
-        # Loop that checks if an event in events list is equal to quit;
-        # quits application if True 
-        for event in events:
-            check_for_quit(event)
-            check_for_clicks(event)
-
-
-        if timer_remaining <= 0:
-            timer_remaining = 0
-            show_results = True
-
-        # Renders current user's score
-        user_score_label = font.render(f"Score: {score_ctr}", True, "black")
-        timer_label = font.render(f"Time: {timer_remaining} s", True, "black")
-        click_counter_label = font.render(f"Clicks: {click_ctr}", True, "black")
-
-        # Items drawn bottom -> on top -> on top
-        screen.fill('purple')
-        
-        pygame.draw.rect(target_spawning_rectangle.getDisplay(), \
-            target_spawning_rectangle.getColor(), (\
-            target_spawning_rectangle.getPosition()[0], \
-            target_spawning_rectangle.getPosition()[1],\
-            target_spawning_rectangle.getLength(), target_spawning_rectangle.getWidth()))
-        
-        # print(f"show_results={show_results}, drawing frame...")
-        if not show_results:
-            pygame.draw.circle(target_entity.display, target_entity.color, target_entity.position, \
-                target_entity.radius)
-        
-        screen.blit(user_score_label, (5, 5))
-        screen.blit(click_counter_label, (5, 45))
-        screen.blit(timer_label, (5, 85))
-
-
-        if show_results:
-            # Items drawn bottom -> on top -> on top
-            if first_loop_of_show_results:
-                pygame.draw.rect(target_spawning_rectangle.getDisplay(), \
-                    target_spawning_rectangle.getColor(), (\
-                    target_spawning_rectangle.getPosition()[0], \
-                    target_spawning_rectangle.getPosition()[1],\
-                    target_spawning_rectangle.getLength(), target_spawning_rectangle.getWidth()))
-                # Updates pygame display
-                pygame.display.update()
-                time.sleep(1)
-                first_loop_of_show_results = False
-            screen.fill('orange')
-            
-            screen.blit(user_score_label, (screen.get_size()[0]/3, \
-                screen.get_size()[1]/2))
-            
-            screen.blit(click_counter_label, (screen.get_size()[0]/3, \
-                screen.get_size()[1]/2 + 40))
-
-            if click_ctr != 0:
-                
-                accuracy_label = font.render(f"Accuracy: {(score_ctr \
-                    / click_ctr) * 100:.2f}%", True, "black")
-                screen.blit(accuracy_label, (screen.get_size()[0]/3, \
-                    screen.get_size()[1]/2 + 80))
-
-        # Updates pygame display
-        pygame.display.update()
 
 
 """
