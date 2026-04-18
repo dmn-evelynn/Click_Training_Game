@@ -1,0 +1,29 @@
+# File Header:
+
+"""
+    Description of file; Purpose of file
+
+-----------------------------------------------------------------------
+"""
+
+
+# Method Header:
+
+"""
+    (Method-name)
+
+    Summary of method.
+
+    Parameters:
+    example_name (type): Description of parameter.
+
+    Returns:
+    type: Description of return value.
+"""
+
+
+# Single Lined Comments:
+
+# --- (Description of alike code) ---
+
+# Description of line; Purpose of line
