@@ -12,12 +12,10 @@
 -----------------------------------------------------------------------
 """
 
-# Importing libraries
+# Importing libraries & classes
 import pygame, sys, math, random, time
-
-# Single Lined Comments:
-
-# Description of line; Purpose of line
+from circle import circle
+from rectangle import rectangle
 
 # --- Pygame Initialization ---
 
@@ -43,12 +41,16 @@ screen = pygame.display.set_mode((screen_size[0]/2, screen_size[1]/2))
 
 # Generates a random (x, y) position within the middle third of the 
 # screen; Sets initial target location
-circle_pos = (random.randint(screen.get_size()[0] // 3, screen.get_size()[0] // 2), \
-    random.randint(screen.get_size()[1] // 3, screen.get_size()[1] // 2))
+circle_pos = (random.randint(screen.get_size()[0] // 3, \
+    screen.get_size()[0] // 2), random.randint(screen. \
+        get_size()[1] // 3, screen.get_size()[1] // 2))
 
-# Defines the radius of the clickable circle in pixels; Controls target
-# hit area size
-circle_width = 95
+# Creates a circle class with specified display, color, position, & radius 
+target_entity = circle(screen, "orange", circle_pos, 65)
+
+# --- Rectangle Properties ---
+
+target_spawning_rectangle = rectangle(screen, "aqua", )
 
 # --- UI & Font ---
 
@@ -100,9 +102,9 @@ start_time = pygame.time.get_ticks()
 """
 def check_circle_collision() -> bool:
     mouse_pos = pygame.mouse.get_pos()
-
-    if math.sqrt((mouse_pos[0] - circle_pos[0])**2 + (mouse_pos[1] - \
-        circle_pos[1])**2) <= circle_width:
+    
+    if math.sqrt((mouse_pos[0] - target_entity.getPosition()[0])**2 + (mouse_pos[1] - \
+        target_entity.getPosition()[1])**2) <= target_entity.radius:
         return True
     return False
 
@@ -178,7 +180,7 @@ def check_for_clicks(event) -> bool:
             click_ctr += 1
             # Changes circle position & adds points to score counter
             if check_circle_collision():
-                circle_pos = generate_circle_pos()
+                target_entity.updatePosition(generate_circle_pos())
                 # print(circle_pos)
                 score_ctr += 1
 
@@ -227,10 +229,10 @@ def run_game_loop() -> None:
         pygame.draw.rect(screen, "aqua", (100, 150, \
             screen.get_size()[0] - 200, screen.get_size()[1] - 350))
         
-        print(f"show_results={show_results}, drawing frame...")
+        # print(f"show_results={show_results}, drawing frame...")
         if not show_results:
-            pygame.draw.circle(screen, "orange", circle_pos, \
-                circle_width)
+            pygame.draw.circle(target_entity.display, target_entity.color, target_entity.position, \
+                target_entity.radius)
         
         screen.blit(user_score_label, (5, 5))
         screen.blit(click_counter_label, (5, 45))
