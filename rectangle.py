@@ -27,3 +27,9 @@ class rectangle(shape):
         super().__init__(display, color, position)
         self.length = length
         self.width = width
+
+    def getLength(self):
+        return self.length
+
+    def getWidth(self):
+        return self.width

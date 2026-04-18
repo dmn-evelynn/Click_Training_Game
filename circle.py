@@ -25,3 +25,6 @@ class circle(shape):
     def __init__(self, display, color, position, radius):
         super().__init__(display, color, position)
         self.radius = radius
+
+    def getRadius(self):
+        return self.radius

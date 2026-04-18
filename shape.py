@@ -28,5 +28,11 @@ class shape:
     def updatePosition(self, position):
         self.position = position
 
+    def getDisplay(self):
+        return self.display
+
+    def getColor(self):
+        return self.color
+
     def getPosition(self):
         return self.position

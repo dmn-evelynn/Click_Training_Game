@@ -45,12 +45,17 @@ circle_pos = (random.randint(screen.get_size()[0] // 3, \
     screen.get_size()[0] // 2), random.randint(screen. \
         get_size()[1] // 3, screen.get_size()[1] // 2))
 
+circle_radius = 65
+
 # Creates a circle class with specified display, color, position, & radius 
-target_entity = circle(screen, "orange", circle_pos, 65)
+target_entity = circle(screen, "orange", circle_pos, circle_radius)
 
 # --- Rectangle Properties ---
 
-target_spawning_rectangle = rectangle(screen, "aqua", )
+# Creates a rectangle class with specified display, color, position, 
+# length, & width
+target_spawning_rectangle = rectangle(screen, "aqua", (100, 150), \
+    screen.get_size()[0] - 200, screen.get_size()[1] - 350)
 
 # --- UI & Font ---
 
@@ -226,8 +231,11 @@ def run_game_loop() -> None:
         # Items drawn bottom -> on top -> on top
         screen.fill('purple')
         
-        pygame.draw.rect(screen, "aqua", (100, 150, \
-            screen.get_size()[0] - 200, screen.get_size()[1] - 350))
+        pygame.draw.rect(target_spawning_rectangle.getDisplay(), \
+            target_spawning_rectangle.getColor(), (\
+            target_spawning_rectangle.getPosition()[0], \
+            target_spawning_rectangle.getPosition()[1],\
+            target_spawning_rectangle.getLength(), target_spawning_rectangle.getWidth()))
         
         # print(f"show_results={show_results}, drawing frame...")
         if not show_results:
@@ -242,8 +250,11 @@ def run_game_loop() -> None:
         if show_results:
             # Items drawn bottom -> on top -> on top
             if first_loop_of_show_results:
-                pygame.draw.rect(screen, "aqua", (100, 150, \
-                    screen.get_size()[0] - 200, screen.get_size()[1] - 350))
+                pygame.draw.rect(target_spawning_rectangle.getDisplay(), \
+                    target_spawning_rectangle.getColor(), (\
+                    target_spawning_rectangle.getPosition()[0], \
+                    target_spawning_rectangle.getPosition()[1],\
+                    target_spawning_rectangle.getLength(), target_spawning_rectangle.getWidth()))
                 # Updates pygame display
                 pygame.display.update()
                 time.sleep(1)
