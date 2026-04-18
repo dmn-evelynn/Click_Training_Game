@@ -31,11 +31,12 @@ circle_width = 95
 # Font variable used for rendering score and timer
 font = pygame.font.Font("cour.ttf", 30)
 
-# Starting score
+# Starting scores
 score_ctr = 0
+click_ctr = 0
 
 # Timer duration
-DURATION = 66 # seconds
+DURATION = 6 # seconds
 # Boolean that determines if results screen should be shown
 show_results = False
 
@@ -50,7 +51,7 @@ def check_circle_collision() -> bool:
     return False
 
 def check_for_quit(event) -> bool:
-    if event.type == pygame.QUIT:
+    if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
         pygame.quit()
         sys.exit()
 
@@ -67,7 +68,7 @@ def generate_circle_pos() -> (int, int):
         
 
 def check_for_clicks(event) -> bool:
-    global score_ctr, circle_pos
+    global score_ctr, circle_pos, click_ctr
 
     # If show_results is True then prevent user from being able to interact with game components.
     if show_results:
@@ -77,6 +78,7 @@ def check_for_clicks(event) -> bool:
     if event.type == pygame.MOUSEBUTTONDOWN:
         # 1 = left click; 3 = right click
         if event.button == 1 or event.button == 3:
+            click_ctr += 1
             # Changes circle position & adds points to score counter
             if check_circle_collision():
                 circle_pos = generate_circle_pos()
@@ -102,18 +104,25 @@ while True:
     # Renders current user's score
     user_score_label = font.render(f"Score: {score_ctr}", True, "black")
     timer_label = font.render(f"Time: {timer_remaining} s", True, "black")
+    click_counter_label = font.render(f"Clicks: {click_ctr}", True, "black")
 
     if show_results:
         # Items drawn bottom -> on top -> on top
         screen.fill('orange')
         screen.blit(user_score_label, (screen.get_size()[0]/3, screen.get_size()[1]/2))
+        screen.blit(click_counter_label, (screen.get_size()[0]/3, screen.get_size()[1]/2 + 40))
+
+        if click_ctr != 0:
+            accuracy_label = font.render(f"Accuracy: {(score_ctr / click_ctr) * 100:.2f}%", True, "black")
+            screen.blit(accuracy_label, (screen.get_size()[0]/3, screen.get_size()[1]/2 + 80))
     else:
         # Items drawn bottom -> on top -> on top
         screen.fill('purple')
-        pygame.draw.rect(screen, "aqua", (100, 150, screen.get_size()[0] / 2 - 100, screen.get_size()[1] / 2 - 150))
+        pygame.draw.rect(screen, "aqua", (100, 150, screen.get_size()[0] - 200, screen.get_size()[1] - 350))
         pygame.draw.circle(screen, "orange", circle_pos, circle_width)
         screen.blit(user_score_label, (5, 5))
-        screen.blit(timer_label, (5, 30))
+        screen.blit(click_counter_label, (5, 45))
+        screen.blit(timer_label, (5, 85))
 
     # Updates pygame display
     pygame.display.update()
