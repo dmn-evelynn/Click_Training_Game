@@ -3,10 +3,9 @@
 
 -----------------------------------------------------------------------
 """
-
-
 # Importing libraries & classes
 import pygame
+from check import check_for_clicks, check_for_quit
 
 
 # --- Timer ---
@@ -14,6 +13,16 @@ import pygame
 # Sets the game round length in seconds; Controls how long the player 
 # has to click targets
 DURATION = 6 # seconds
+
+# --- Game State ---
+
+# Flags whether the results screen is active; Toggled to True when the
+# timer expires
+show_results = False
+
+# Records the time the game started in milliseconds; Used to calculate
+# elapsed time each frame
+start_time = pygame.time.get_ticks()
 
 
 """
@@ -29,7 +38,7 @@ DURATION = 6 # seconds
     Returns:
     None: Runs indefinitely until the application is quit.
 """
-def run_game_loop() -> None:
+def runGameLoop() -> None:
     # Game loop
     while True:
         timer_remaining = DURATION - (pygame.time.get_ticks() - \
@@ -41,7 +50,7 @@ def run_game_loop() -> None:
         # quits application if True 
         for event in events:
             check_for_quit(event)
-            check_for_clicks(event)
+            check_for_clicks(event, show_results)
 
 
         if timer_remaining <= 0:

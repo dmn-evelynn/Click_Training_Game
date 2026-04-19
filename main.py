@@ -11,12 +11,16 @@
 
 -----------------------------------------------------------------------
 """
+from runGameLoop import runGameLoop
+
+
+
 
 # Importing libraries & classes
-import sys, math, random, time
+import math, random, time
 from circle import circle
 from rectangle import rectangle
-from runGL import run_game_loop
+
 
 # --- Pygame Initialization ---
 
@@ -75,21 +79,11 @@ click_ctr = 0
 
 # --- Game State ---
 
-# Flags whether the results screen is active; Toggled to True when the
-# timer expires
-show_results = False
+
 
 # Flags whether it is the first loop of show_results being set to True;
 # Toggled to False after first visit
 first_loop_of_show_results = True
-
-# Records the time the game started in milliseconds; Used to calculate
-# elapsed time each frame
-start_time = pygame.time.get_ticks()
-
-
-
-
 
 
 
@@ -106,7 +100,7 @@ start_time = pygame.time.get_ticks()
     None: This function does not return a value.
 """
 def main() -> None:
-    run_game_loop()
+    runGameLoop()
 
 # --- Main Entry Point ---
 

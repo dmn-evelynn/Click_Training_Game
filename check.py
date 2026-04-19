@@ -3,6 +3,8 @@
 
 -----------------------------------------------------------------------
 """
+# Importing libraries & classes
+import pygame, sys
 
 
 """
@@ -40,7 +42,7 @@ def check_circle_collision() -> bool:
     Returns:
     bool: Does not return a value under normal execution; exits the program if a quit event is detected.
 """
-def check_for_quit(event) -> bool:
+def check_for_quit(event) -> None:
     if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and \
         event.key == pygame.K_ESCAPE):
         pygame.quit()
@@ -60,9 +62,7 @@ def check_for_quit(event) -> bool:
     bool: Returns None implicitly if show_results is True (interaction blocked),
         otherwise processes the click event and updates game state.
 """
-def check_for_clicks(event) -> bool:
-    global score_ctr, circle_pos, click_ctr
-
+def check_for_clicks(event) -> None:
     # If show_results is True then prevent user from being able to interact with game components.
     if show_results:
         return
