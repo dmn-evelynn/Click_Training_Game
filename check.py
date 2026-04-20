@@ -4,7 +4,8 @@
 -----------------------------------------------------------------------
 """
 # Importing libraries & classes
-import pygame, sys
+import pygame, sys, math
+from generate import generate_circle_pos
 
 
 """
@@ -21,7 +22,7 @@ import pygame, sys
     bool: True if the mouse cursor is within or on the circle's boundary,
           False otherwise.
 """
-def check_circle_collision() -> bool:
+def check_circle_collision(target_entity) -> bool:
     mouse_pos = pygame.mouse.get_pos()
     
     if math.sqrt((mouse_pos[0] - target_entity.getPosition()[0])**2 + (mouse_pos[1] - \
@@ -62,10 +63,10 @@ def check_for_quit(event) -> None:
     bool: Returns None implicitly if show_results is True (interaction blocked),
         otherwise processes the click event and updates game state.
 """
-def check_for_clicks(event) -> None:
+def check_for_clicks(event, show_results, score_ctr, click_ctr, target_entity, screen) -> None:
     # If show_results is True then prevent user from being able to interact with game components.
     if show_results:
-        return
+        return score_ctr, click_ctr
 
     # If event mouse button down is found (clicking) then checks if circle was clicked/collided with
     if event.type == pygame.MOUSEBUTTONDOWN:
@@ -73,7 +74,9 @@ def check_for_clicks(event) -> None:
         if event.button == 1 or event.button == 3:
             click_ctr += 1
             # Changes circle position & adds points to score counter
-            if check_circle_collision():
-                target_entity.updatePosition(generate_circle_pos())
+            if check_circle_collision(target_entity):
+                target_entity.updatePosition(generate_circle_pos(screen))
                 # print(circle_pos)
                 score_ctr += 1
+
+    return score_ctr, click_ctr

@@ -22,7 +22,7 @@ import random
     Returns:
     tuple (int, int): A tuple containing the x and y coordinates of a cyan pixel.
 """
-def generate_circle_pos() -> (int, int):
+def generate_circle_pos(screen) -> (int, int):
     while True:
         circle_x = random.randint(0, int(screen.get_size()[0]) - 1)
         circle_y = random.randint(0, int(screen.get_size()[1]) - 1)
